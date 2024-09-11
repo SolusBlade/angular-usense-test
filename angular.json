@@ -24,6 +24,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:application",
           "options": {
+            "baseHref": "/angular-usense-test/",
             "outputPath": "dist/angular-usense-test",
             "index": "src/index.html",
             "browser": "src/main.ts",
