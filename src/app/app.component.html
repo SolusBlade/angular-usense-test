@@ -1,10 +1,10 @@
 <main>
   <div class="form__wrapper">
-    <form class="form">
+    <form [formGroup]="passwordForm" class="form">
       <div class="form__box">
         <label for="passwordInput" class="form__text">Password</label>
         <input
-          (input)="onChange($event)"
+          formControlName="passwordInput"
           class="form__input"
           type="password"
           id="passwordInput"
@@ -17,25 +17,25 @@
         <div
           class="form__alertBox"
           [ngClass]="{
-            'notEmpty': !isEmpty && !isCorrectLength,
-            'easy': isEasy,
-            'medium' : isMedium,
-            'strong' : isStrong
+            notEmpty: !isEmpty && !isCorrectLength,
+            easy: isEasy,
+            medium: isMedium,
+            strong: isStrong,
           }"
         ></div>
         <div
           class="form__alertBox"
           [ngClass]="{
-            'notEmpty': !isEmpty && !isCorrectLength,
-            'medium' : isMedium,
-            'strong' : isStrong
+            notEmpty: !isEmpty && !isCorrectLength,
+            medium: isMedium,
+            strong: isStrong,
           }"
         ></div>
         <div
           class="form__alertBox"
           [ngClass]="{
-            'notEmpty': !isEmpty && !isCorrectLength,
-            'strong' : isStrong
+            notEmpty: !isEmpty && !isCorrectLength,
+            strong: isStrong,
           }"
         ></div>
       </div>

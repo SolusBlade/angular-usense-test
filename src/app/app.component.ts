@@ -1,4 +1,6 @@
 import { Component } from '@angular/core';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { PasswordStrengthService } from '../services/password-strength.service';
 
 @Component({
   selector: 'app-root',
@@ -6,63 +8,47 @@ import { Component } from '@angular/core';
   styleUrl: './app.component.scss',
 })
 export class AppComponent {
+  passwordForm: FormGroup;
   isEmpty: boolean = true;
   isCorrectLength: boolean = false;
-
+  
   isEasy: boolean = false;
   isMedium: boolean = false;
   isStrong: boolean = false;
 
-  lettersCheck = (str: string): boolean => /[a-zA-Z]/.test(str);
-  numbersCheck = (str: string): boolean => /\d/.test(str);
-  specialCharsCheck = (str: string): boolean => /[^a-zA-Z0-9]/.test(str);
+  constructor(private passwordStrengthService: PasswordStrengthService) {
+    this.passwordForm = new FormGroup({
+      passwordInput: new FormControl(''),
+    });
 
-  strLengthCheck = (str: string): number => str.length;
+    this.passwordForm
+      .get('passwordInput')
+      ?.valueChanges.subscribe((value: string) => {
+        this.updatePasswordStrength(value);
+      });
+  }
 
-  onChange(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    // Check length 
-    this.strLengthCheck(input.value) > 0
-      ? (this.isEmpty = false)
-      : (this.isEmpty = true);
+  private updatePasswordStrength(value: string): void {
+    // Length Check
+    this.isEmpty = value.length === 0;
+    this.isCorrectLength = value.length >= 8;
 
-    this.strLengthCheck(input.value) >= 8
-      ? (this.isCorrectLength = true)
-      : (this.isCorrectLength = false);
-    // Easy check
-    if (
-      (this.lettersCheck(input.value) ||
-        this.numbersCheck(input.value) ||
-        this.specialCharsCheck(input.value)) &&
-      this.isCorrectLength
-    ) {
-      this.isEasy = true;
-    } else {
-      this.isEasy = false;
-    }
-    // Medium check
-    if (
-      ((this.lettersCheck(input.value) && this.numbersCheck(input.value)) ||
-        (this.lettersCheck(input.value) &&
-          this.specialCharsCheck(input.value)) ||
-        (this.numbersCheck(input.value) &&
-          this.specialCharsCheck(input.value))) &&
-      this.isCorrectLength
-    ) {
-      this.isMedium = true;
-    } else {
-      this.isMedium = false;
-    }
-    // Strong check
-    if (
-      this.lettersCheck(input.value) &&
-      this.numbersCheck(input.value) &&
-      this.specialCharsCheck(input.value) &&
-      this.isCorrectLength
-    ) {
-      this.isStrong = true;
-    } else {
-      this.isStrong = false;
-    }
+    // Is password easy check
+    this.isEasy = this.passwordStrengthService.checkEasy(
+      value,
+      this.isCorrectLength,
+    );
+
+    // Is password medium check
+    this.isMedium = this.passwordStrengthService.checkMedium(
+      value,
+      this.isCorrectLength,
+    );
+
+    // Is password strong check
+    this.isStrong = this.passwordStrengthService.checkStrong(
+      value,
+      this.isCorrectLength,
+    );
   }
 }
